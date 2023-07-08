@@ -1,27 +1,29 @@
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
+// const firebaseConfig = {
+//   // Your Firebase configuration object here
+//   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+//   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+//   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+//   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+//   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+//   appId: process.env.REACT_APP_FIREBASE_APP_ID,
+//   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+// };
 
 const firebaseConfig = {
-  // Your Firebase configuration object here
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyDjp-7yR3-nSm9tDB4oG1-DCJTIiFS5Auo",
+  authDomain: "my-secret-diary-fa48b.firebaseapp.com",
+  projectId: "my-secret-diary-fa48b",
+  storageBucket: "my-secret-diary-fa48b.appspot.com",
+  messagingSenderId: "130407956294",
+  appId: "1:130407956294:web:208919c7499197a5286f47",
+  measurementId: "G-KBBD5V6052"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Export the auth, firestore, and storage services
-// export const auth = firebase.auth();
-// export const db = firebase.firestore();
-// export const storage = firebase.storage();
-
-
-
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);

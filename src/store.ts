@@ -1,18 +1,12 @@
-import { createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 
-interface AppState {
-  // define your app state here
-}
+import authSlice from "./features/authSlice";
 
-const initialState: AppState = {
-  // set up your initial state here
-};
+export const store = configureStore({
+  reducer: {
+    auth: authSlice,
+  },
+});
 
-function rootReducer(state: AppState = initialState, action: any) {
-  // handle your actions here and return a new state
-  return state;
-}
-
-const store = createStore(rootReducer);
-
-export default store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
