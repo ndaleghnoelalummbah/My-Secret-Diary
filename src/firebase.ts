@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
+import * as firebase from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
+import { getStorage } from "@firebase/storage";
+//import "firebase/storage";
 // const firebaseConfig = {
 //   // Your Firebase configuration object here
 //   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -20,10 +22,15 @@ const firebaseConfig = {
   storageBucket: "my-secret-diary-fa48b.appspot.com",
   messagingSenderId: "130407956294",
   appId: "1:130407956294:web:208919c7499197a5286f47",
-  measurementId: "G-KBBD5V6052"
+  measurementId: "G-KBBD5V6052",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+//get references to authentication, firstore and storage services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
+// export const storageRef = storage.ref();
+// export  const storage=firebase.storage();
+// const storageRef=storage.ref();

@@ -17,5 +17,5 @@
     "jsx": "react-jsx"
   },
   "include": ["src"],
-  "types": ["react", "react-dom", "react-router-dom"]
+  "types": ["react", "react-dom", "react-router-dom", "react-toastify,", "Firebase"]
 }

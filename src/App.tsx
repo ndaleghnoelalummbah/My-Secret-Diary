@@ -12,6 +12,7 @@ import { useAppDispatch } from "./hooks/storeHook";
 import { login } from "./features/authSlice";
 import AuthRoutes from "./components/HOC/AuthRoutes";
 import Home from "./pages/Home/Home";
+import DiaryEntry from "./pages/DiaryEntry";
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -35,11 +36,12 @@ const App = () => {
     <Routes>
       {/* define your routes here using Route components */}
       <Route path="/" element={<Home />} />
-      <Route path="Dashboard" element={<Dashboard />} />
+      <Route path="journal" element={<Dashboard />} />
       <Route element={<AuthRoutes />}>
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="auth" element={<Auth />} />
+      <Route path="journal/create" element={<DiaryEntry />} />
     </Routes>
   );
 };
