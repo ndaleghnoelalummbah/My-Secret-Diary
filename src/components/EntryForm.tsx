@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { collection, getDoc, doc, addDoc, setDoc, DocumentData } from "firebase/firestore";
+import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { collection, getDoc, doc, updateDoc, addDoc, setDoc, DocumentData } from "firebase/firestore";
 import { db } from "../firebase";
 import { storage } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -12,16 +13,18 @@ import { Console } from "console";
 
 // Define the initial values for the form
 interface FormValues {
+  //createdAt: Date;
   description: string;
   category: string;
   image: File | null;
   isPublic: boolean;
 }
+
 // Define the EntryForm component
 //{ createEntry }: ConnectedProps<typeof connector>
 const EntryForm = () => {
   const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
-
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
   useEffect(() => {
     getCategories();
@@ -30,8 +33,8 @@ const EntryForm = () => {
   function getCategories() {
     const fetchStrings = async () => {
       try {
-        const categoriesRef = doc(db, "categories", "categories");
-        const categoriesDoc = await getDoc(categoriesRef);
+        const categoriesRef = doc(db, "categories", "categories"); //reference a collection
+        const categoriesDoc = await getDoc(categoriesRef); //reference a document in the collection
         const stringArray = categoriesDoc.data()?.categories;
         if (stringArray) {
           setCategories(stringArray);
@@ -44,59 +47,77 @@ const EntryForm = () => {
     };
     fetchStrings();
   }
-
   const [initialValues, setInitialValues] = useState<FormValues>({
+    // createdAt: new Date(),
     description: "",
     category: "",
     image: null,
     isPublic: false,
   });
-  //const [formData, setFormData] = useState(initialValues);
+  // const [formData, setFormData] = useState({...initialValues, createdAt: null});
 
   // Define the validation schema using Yup
   const validationSchema = Yup.object({
     description: Yup.string().required("Description is required"),
     // category: Yup.string().required("Category is required"),
     image: Yup.mixed()
-      .test("fileSize", "File size is too large", (value: Yup.AnyObject | undefined) => {
+      .notRequired()
+      .test("fileSize", "File size is too large", (value: Yup.AnyObject | null | undefined) => {
         if (!value) return true; // Skip validation if no file is selected
         const file = value as File;
         return file.size ? file.size <= 1024 * 1024 : false; // 1MB
       })
-      .test("fileType", "Only image files are allowed", (value: Yup.AnyObject | undefined) => {
+      .test("fileType", "Only image files are allowed", (value: Yup.AnyObject | null | undefined) => {
         if (!value) return true; // Skip validation if no file is selected
         const file = value as File;
         return file.type ? ["image/jpeg", "image/png", "image/gif"].includes(file.type) : false;
       }),
   });
 
-  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0];
-  //   if (file) {
-  //     const imageUrl = URL.createObjectURL(file);
-  //     setImagePreview(imageUrl);
-  //   } else {
-  //     setImagePreview(undefined);
-  //   }
-  // };
+  //creat a new document with a generated document id
 
-//creat a new document with a generated document id
-const diaryRef = doc(collection(db,"categories"));
- 
-  const onSubmit = (values: FormValues, onSubmitProps: FormikHelpers<FormValues>) => {
+  const onSubmit = async (values: FormValues, onSubmitProps: FormikHelpers<FormValues>) => {
     setInitialValues({
+      // createdAt: new Date(),
       description: values.description,
       category: values.category,
       image: values.image,
       isPublic: values.isPublic,
     });
-    // later write to the document by merging to the existing content
-    //await setDoc(diaryRef, initialValues, {merge: true})
-    console.log(values);
-    onSubmitProps.resetForm();
-    // alert("yuu")
-  };
+    const { category, description, image, isPublic } = values;
+    if (!values.image) return;
+    const storageRef = ref(storage, `files/${values.image.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, values.image);
 
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        alert(error);
+      },
+      async () => {
+        try {
+          // Get download URL and create Firestore document
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+          const entriesCollectionRef = collection(db, "diaryEntries");
+          const entriesDocRef = await addDoc(entriesCollectionRef, {
+            category,
+            description,
+            image: downloadURL,
+            isPublic,
+            createdAt: new Date(),
+          });
+
+          // Set imgUrl to the download URL and reset the form
+          setImgUrl(downloadURL);
+          onSubmitProps.resetForm();
+        } catch (error) {
+          alert(error);
+        }
+      }
+    );
+  };
   // Render the form using Formik and Field components from formik
   return (
     <div className=" max-w-xl mx-auto my-5 ">
@@ -130,6 +151,8 @@ const diaryRef = doc(collection(db,"categories"));
               <div className="bg-gray-100 bg-opacity-80 h-64 mt-1 mb-4 ">
                 {/* <div className="bg-slate-200 bg-opacity-60  h-40 w-3/4 mx-auto py-2 "> */}
                 {imagePreview && <img src={imagePreview} alt="Preview of uploaded image" className="h-52 w-full mx-auto " />}
+
+                {/* {imgUrl && <img src={imgUrl} alt="uploaded file" className="h-52 w-full mx-auto " />} */}
                 <div className="mt-2 mx-auto bg-green-100 w-52">
                   {" "}
                   <input
@@ -172,120 +195,3 @@ const diaryRef = doc(collection(db,"categories"));
   );
 };
 export default EntryForm;
-// // Define the mapStateToProps function to connect the createEntry action to the EntryForm component
-// const mapStateToProps = (state: RootState) => ({});
-
-// // Define the mapDispatchToProps function to connect the createEntry action to the EntryForm component
-// const mapDispatchToProps = {
-//   createEntry,
-// };
-
-// // Connect the EntryForm component to the Redux store using the connect function from react-redux
-// const connector = connect(mapStateToProps, mapDispatchToProps);
-// export default connector(EntryForm);
-
-//URL.createObjectURL(file)
-
-// Define the submit function for the form
-// const onSubmit = async (values: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
-//   // Create a reference to the Firestore database and the Firebase storage
-//   try {
-//     const storageRef = storage.ref();
-
-//     // Create a reference to the image file with a unique ID generated by uuidv4
-//     const imageRef = storageRef.child(`images/${uuidv4()}`);
-
-//     // Upload the image file to Firebase storage
-//     const uploadTask = imageRef.put(values.image as File);
-//     uploadTask.on(
-//       "state_changed",
-//       null,
-//       (error: Error) => {
-//         console.error(error);
-//       },
-//       async () => {
-//         // Once the image is uploaded, get the download URL and create a new entry in Firestore
-//         const imageUrl = await imageRef.getDownloadURL();
-//         const entriesRef = db.collection("entries");
-//         const newEntry = {
-//           description: values.description,
-//           category: values.category,
-//           image: values.image,
-//           isPublic: values.isPublic,
-//           createdAt: new Date(),
-//         };
-//         await entriesRef.add(newEntry);
-
-//         // Dispatch the "createEntry" action with the new entry
-//         createEntry(newEntry);
-
-//         // Reset the form
-//         resetForm();
-
-//       }
-//     );
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-//   const handleFormSubmitwrong = async (values: PostFormValues) => {
-//     try {
-// //const db = firebase.firestore();
-//       const postsRef = db.collection("posts");
-//       const newPost = {
-//         description: values.description || null,
-//         image: values.image?.url || null,
-//         isPublic: values.isPublic,
-//         category: values.category,
-//         userId:auth.currentUser?.uid || null,
-//         createdAt: db.FieldValue.serverTimestamp(),
-//       };
-//       await postsRef.add(newPost);
-//       onSubmit(values);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleFormSubmit}>
-//       {({ isSubmitting, setFieldValue }) => (
-//         <Form>
-//           <div>
-//             <label htmlFor="description">Description</label>
-//             <Field as="textarea" name="description" id="description" />
-//             <ErrorMessage name="description" component="div" />
-//           </div>
-//           <div>
-//             <label htmlFor="image">Image</label>
-//             <input type="file" accept="image/*" onChange={handleFileUpload} />
-//             {values.image && <img src={values.image.url} alt={values.image.name} />}
-//             <ErrorMessage name="image" component="div" />
-//           </div>
-//           <div>
-//             <Field type="checkbox" name="isPublic" id="isPublic" />
-//             <label htmlFor="isPublic">IsPublic</label>
-//             <ErrorMessage name="isPublic" component="div" />
-//           </div>
-//           <div>
-//             <label htmlFor="category">Category</label>
-//             <Field as="select" name="category" id="category">
-// {categories.map((category) => (
-//   <option key={category} value={category}>
-//     {category}
-//   </option>
-// ))}
-//             </Field>
-//             <ErrorMessage name="category" component="div" />
-//           </div>
-//           <button type="submit" disabled={isSubmitting}>
-//             Submit
-//           </button>
-//         </Form>
-//       )}
-//     </Formik>
-//   );
-// };
-
-// export default EntryForm;
