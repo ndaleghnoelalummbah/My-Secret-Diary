@@ -32,7 +32,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (Boolean(user)) {
-      navigate("/Dashboard");
+      navigate("/journal");
     }
   }, [user, navigate]);
 
@@ -71,7 +71,7 @@ const Auth = () => {
     const facebookprovider = new FacebookAuthProvider();
     // try {
     //   const { user } = await signInWithPopup(auth, facebookprovider);
-      
+
     //   if (user && user.email)
     //     dispatch(
     //       login({
@@ -83,7 +83,7 @@ const Auth = () => {
     // } catch (error) {
     //   console.log("Error signing in:", error);
     // }
-     signInWithPopup(auth, facebookprovider)
+    signInWithPopup(auth, facebookprovider)
       .then((result) => {
         console.log(result);
       })

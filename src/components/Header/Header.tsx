@@ -16,11 +16,11 @@ const Header = () => {
             {/* <Link to="/" className={linkHome}>
               Home
             </Link> */}
-            {Boolean(!user) && (
+            {/* {Boolean(!user) && (
               <Link to="/auth" className={linkSignIn}>
                 Sign in
               </Link>
-            )}
+            )} */}
             {user ? <Link to="/profile">{user?.photoUrl ? <img className={linkProfile} src={user.photoUrl} alt="Avatar" /> : <div className="w-24 h-24 mb-3 text-4xl font-bold grid place-content-center bg-green-200 rounded-full shadow-lg">{user?.email[0].toUpperCase()}</div>}</Link> : <></>}
           </div>
         </div>
