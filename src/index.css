@@ -1,6 +1,6 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* Your global styles go here */
 
@@ -13,10 +13,17 @@ h2 {
   font-size: 16px;
 }
 p {
-    font-size: 14px;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    line-height: 28px;
+  font-size: 14px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  line-height: 28px;
 }
 small {
-    font-size: 12px;
+  font-size: 12px;
 }
+/* label {
+  margin-bottom: 30px;
+  margin-top: 16rem;
+  }
+Field {
+  margin-top: 24px;
+} */
