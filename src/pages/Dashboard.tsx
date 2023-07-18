@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import { Link } from "react-router-dom";
+import DiaryCard from "../components/DiaryCard";
 const Dashboard: FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -34,6 +35,7 @@ const Dashboard: FC = () => {
                 <Link to="/journal/create">New entry</Link>
               </button>
             </div>
+            <DiaryCard />
             <Footer />
           </div>
         </>
