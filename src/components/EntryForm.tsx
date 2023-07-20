@@ -142,7 +142,7 @@ const EntryForm = () => {
             <div>
               <label htmlFor="description">Description</label>
               <br />
-              <Field as="textarea" name="description" id="description" className=" mt-2 border-2 border-gray-700 rounded-lg w-full h-24" />
+              <Field as="textarea" name="description" id="description" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-24" />
               {errors.description && touched.description ? <div className=" text-red-400">{errors.description}</div> : null}
             </div>
             <div className="my-2">
