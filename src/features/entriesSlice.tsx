@@ -6,6 +6,7 @@ interface Entry {
   category: string;
   image: File | null;
   isPublic: boolean;
+  createdAt: Date;
 }
 interface EntriesState {
   entries: Entry[];

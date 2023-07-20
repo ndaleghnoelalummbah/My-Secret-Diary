@@ -26,7 +26,8 @@ const Auth = () => {
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState<string | null>(null);
   const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((
+    state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 

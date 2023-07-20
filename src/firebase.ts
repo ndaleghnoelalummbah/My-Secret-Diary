@@ -19,7 +19,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDjp-7yR3-nSm9tDB4oG1-DCJTIiFS5Auo",
   authDomain: "my-secret-diary-fa48b.firebaseapp.com",
   projectId: "my-secret-diary-fa48b",
-  storageBucket: "my-secret-diary-fa48b.appspot.com",
+  storageBucket: "gs://my-secret-diary-fa48b.appspot.com",
   messagingSenderId: "130407956294",
   appId: "1:130407956294:web:208919c7499197a5286f47",
   measurementId: "G-KBBD5V6052",
