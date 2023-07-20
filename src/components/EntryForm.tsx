@@ -189,8 +189,6 @@ const EntryForm = () => {
           </Form>
         )}
       </Formik>
-      <p>{initialValues.description}</p>
-      {/* <p>{categories}</p> */}
     </div>
   );
 };
