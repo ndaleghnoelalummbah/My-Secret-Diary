@@ -8,10 +8,8 @@ import { Link } from "react-router-dom";
 import DiaryCard from "../components/DiaryCard";
 import search from "../resource/search.png";
 import filter from "../resource/filter.png";
-interface Props {
-  searchQuery: string;
-}
-const Dashboard: FC <Props>= ({ searchQuery }) => {
+
+const Dashboard: FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
@@ -46,16 +44,16 @@ const Dashboard: FC <Props>= ({ searchQuery }) => {
             </div>
             <div className=" my-4 flex justify-between ">
               <div className=" flex row w-9/12 bg-blue-200">
-                <input type="search" placeholder="Type here to search" value={searchQuery} onChange={handleSearchQueryChange} className=" border-b-2 border-black p-1 w-full" />
+                <input type="text" placeholder="Type here to search" value={searchQuery} onChange={handleSearchQueryChange} className=" border-b-2 border-black p-1 w-full" />
                 <img src={search} alt="search" className=" -ml-8 border-b-2 border-black" />
               </div>
 
               <div className=" flex row w-2/12 bg-blue-200">
-                <input type="search" value={searchQuery} onChange={handleSearchQueryChange} className=" border-b-2 border-black p-1 w-full" />
+                <input type="search" className=" border-b-2 border-black p-1 w-full" />
                 <img src={filter} alt="filter" className=" -ml-8 border-b-2 border-black" />
               </div>
             </div>
-            <DiaryCard />
+            <DiaryCard search={searchQuery} />
             <Footer />
           </div>
         </>

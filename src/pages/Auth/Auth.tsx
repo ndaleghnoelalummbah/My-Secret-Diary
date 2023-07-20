@@ -70,20 +70,7 @@ const Auth = () => {
 
   const signInWithFacebook = async () => {
     const facebookprovider = new FacebookAuthProvider();
-    // try {
-    //   const { user } = await signInWithPopup(auth, facebookprovider);
-
-    //   if (user && user.email)
-    //     dispatch(
-    //       login({
-    //         email: user.email,
-    //         id: user.uid,
-    //         photoUrl: user.photoURL || null,
-    //       })
-    //     );
-    // } catch (error) {
-    //   console.log("Error signing in:", error);
-    // }
+  
     signInWithPopup(auth, facebookprovider)
       .then((result) => {
         console.log(result);
@@ -159,13 +146,40 @@ const Auth = () => {
               </button>
             </div>
 
+          </form>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Auth;
+
+  // try {
+    //   const { user } = await signInWithPopup(auth, facebookprovider);
+
+    //   if (user && user.email)
+    //     dispatch(
+    //       login({
+    //         email: user.email,
+    //         id: user.uid,
+    //         photoUrl: user.photoURL || null,
+    //       })
+    //     );
+    // } catch (error) {
+    //   console.log("Error signing in:", error);
+    // }
+    {
+      /* 
             <div className="my-3 flex items-center px-3">
               <hr className={hr} />
               <span className={text}>or</span>
               <hr className={hr} />
-            </div>
+            </div> */
+    }
 
-            <div className="grid gap-y-3">
+    {
+      /* <div className="grid gap-y-3">
               <div>
                 <input type="email" placeholder="email@example.com" className={input} {...register("email")} />
                 {errors.email ? <span className="text-red-700">{errors.email.message}</span> : <></>}
@@ -182,9 +196,11 @@ const Auth = () => {
               <button disabled={loading} className={button}>
                 Sign {authType === "login" ? "in" : "up"} with Email
               </button>
-            </div>
+            </div> */
+    }
 
-            <div className="text-sm font-light py-4">
+    {
+      /* <div className="text-sm font-light py-4">
               {authType === "login" ? (
                 <span>
                   Don&apos;t have an account yet?{" "}
@@ -200,20 +216,15 @@ const Auth = () => {
                   </span>
                 </span>
               )}
-            </div>
+            </div> */
+    }
 
-            <div className="my-3 flex items-center px-3">
+    {
+      /* <div className="my-3 flex items-center px-3">
               <hr className={hr} />
               <button onClick={() => setResetPassword(true)} type="button" className={forgotPasswordButton}>
                 forgot password
               </button>
               <hr className={hr} />
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Auth;
+            </div> */
+    }
