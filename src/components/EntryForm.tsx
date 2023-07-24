@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from "uuid";
 import { RootState } from "../store";
 import { createEntry } from "../features/entriesSlice";
 import { Console } from "console";
+import { toast } from "react-toastify";
+import { useCategories } from "./categories";
 
 // Define the initial values for the form
 interface FormValues {
@@ -25,28 +27,30 @@ interface FormValues {
 const EntryForm = () => {
   const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
-  useEffect(() => {
-    getCategories();
-  }, []);
+    const [submitted, setSubmitted] = useState(false);
+  const [refresh, setRefresh] = useState(true);
+const categories = useCategories();
+  // useEffect(() => {
+  //   getCategories();
+  // }, []);
 
-  function getCategories() {
-    const fetchStrings = async () => {
-      try {
-        const categoriesRef = doc(db, "categories", "categories"); //reference a collection
-        const categoriesDoc = await getDoc(categoriesRef); //reference a document in the collection
-        const stringArray = categoriesDoc.data()?.categories;
-        if (stringArray) {
-          setCategories(stringArray);
-          console.log("arr", stringArray);
-          console.log("cat", categories);
-        }
-      } catch (error) {
-        console.error("Error fetching strings:", error);
-      }
-    };
-    fetchStrings();
-  }
+  // function getCategories() {
+  //   const fetchStrings = async () => {
+  //     try {
+  //       const categoriesRef = doc(db, "categories", "categories"); //reference a collection
+  //       const categoriesDoc = await getDoc(categoriesRef); //reference a document in the collection
+  //       const stringArray = categoriesDoc.data()?.categories;
+  //       if (stringArray) {
+  //         setCategories(stringArray);
+  //         console.log("arr", stringArray);
+  //         console.log("cat", categories);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching strings:", error);
+  //     }
+  //   };
+  //   fetchStrings();
+  // }
   const [initialValues, setInitialValues] = useState<FormValues>({
     // createdAt: new Date(),
     description: "",
@@ -74,6 +78,18 @@ const EntryForm = () => {
       }),
   });
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (submitted) {
+      timer = setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [submitted]);
+
   //creat a new document with a generated document id
 
   const onSubmit = async (values: FormValues, onSubmitProps: FormikHelpers<FormValues>) => {
@@ -99,7 +115,6 @@ const EntryForm = () => {
         try {
           // Get download URL and create Firestore document
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-
           const entriesCollectionRef = collection(db, "diaryEntries");
           const entriesDocRef = await addDoc(entriesCollectionRef, {
             category,
@@ -112,6 +127,8 @@ const EntryForm = () => {
           // Set imgUrl to the download URL and reset the form
           setImgUrl(downloadURL);
           onSubmitProps.resetForm();
+          setImagePreview(undefined);
+          setSubmitted(true);
         } catch (error) {
           alert(error);
         }
@@ -185,7 +202,13 @@ const EntryForm = () => {
             <button type="submit" disabled={isSubmitting} className="bg-black text-white font-semibold w-full py-3 mx-auto my-6 rounded-lg">
               Save
             </button>
-            {/* <button onClick={onSubmit} type="button">console</button> */}
+            {submitted && (
+              <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+                <div className="bg-white p-8 rounded-lg shadow-lg">
+                  <p>Form Sucessfully Submitted.</p>
+                </div>
+              </div>
+            )}
           </Form>
         )}
       </Formik>

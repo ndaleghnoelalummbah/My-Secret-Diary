@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import Header from "../Header/Header";
 
 interface props {
-  heading:string;
+  heading: string;
 }
 
 const Navbar: FC<props> = ({ heading }) => {
@@ -11,7 +11,7 @@ const Navbar: FC<props> = ({ heading }) => {
     <div className="bg-black flex p-4 ">
       <img src={logo} alt="logo" />
 
-      <h1 className="text-white mt-2 ml-20">{heading}</h1>
+      <h2 className="text-white font-bold text-lg mt-2 ml-4 md:ml-20">{heading}</h2>
       <div className="ml-auto ">
         <Header />
       </div>
