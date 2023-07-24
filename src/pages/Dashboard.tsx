@@ -8,10 +8,15 @@ import { Link } from "react-router-dom";
 import DiaryCard from "../components/DiaryCard";
 import search from "../resource/search.png";
 import filter from "../resource/filter.png";
+import { useCategories } from "../components/categories";
 
 const Dashboard: FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
+  const [clicked, setClicked] = useState(false);
+  const categories = useCategories();
+
   useEffect(() => {
     // Display a success toast message when the component mounts
     toast.success("Login successful!", {
@@ -29,7 +34,14 @@ const Dashboard: FC = () => {
   const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
-
+  const handleFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setClicked(true);
+    setFilterQuery(event.target.value);
+      //alert(filterQuery);
+  };
+// useEffect(() => {
+//   // This code will run immediately after the state update
+//   }, [filterQuery]);
   return (
     <div>
       {isLoaded ? (
@@ -48,12 +60,24 @@ const Dashboard: FC = () => {
                 <img src={search} alt="search" className=" -ml-8 border-b-2 border-black" />
               </div>
 
-              <div className=" flex row w-2/12 bg-blue-200">
-                <input type="search" className=" border-b-2 border-black p-1 w-full" />
-                <img src={filter} alt="filter" className=" -ml-8 border-b-2 border-black" />
+              <div className=" flex row w-2/12 bg-blue-200 border-b-2 border-black justify-end">
+                <div></div>
+                {!clicked && <img src={filter} alt="filter" onClick={() => setClicked(true)} />}
+                {clicked && (
+                  <select value={filterQuery} name="category" id="category" onChange={handleFilter} className=" border-b-2 border-black p-1 w-full">
+                    <option value="" disabled>
+                      category
+                    </option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
-            <DiaryCard search={searchQuery} />
+            <DiaryCard search={searchQuery} filter={filterQuery} />
             <Footer />
           </div>
         </>

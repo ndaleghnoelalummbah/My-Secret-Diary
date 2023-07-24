@@ -1,9 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { collection, getDocs, CollectionReference, DocumentData, where, query, Query, or } from "firebase/firestore";
+import { collection, getDocs, CollectionReference, DocumentData, where, query, Query, orderBy, OrderByDirection } from "firebase/firestore";
 import { db } from "../firebase";
 import pvlock from "../resource/private-lock.png";
 import pblock from "../resource/public-lock.png";
 import { Timestamp } from "firebase/firestore";
+import { boolean } from "yup";
+import Loader from "./Loader";
+import { useAppDispatch } from "../hooks/storeHook";
 
 interface DiaryEntry {
   id: string;
@@ -15,19 +18,29 @@ interface DiaryEntry {
 }
 
 interface Props {
-  search: string;
+  search: string | boolean;
+  filter: string;
 }
-const DiaryCard: FC<Props> = ({ search }) => {
+
+const DiaryCard: FC<Props> = ({ search, filter }) => {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchDiaryEntries = async () => {
+      setIsLoading(true); // set loading to true before fetching data
       const collectionRef: CollectionReference<DocumentData> = collection(db, "diaryEntries");
-      const q: Query<DocumentData> = search ? query(collectionRef, where("category", "==", search)) : collectionRef;
-      // const q2: Query<DocumentData> = search ? query(collectionRef, where("da", "==", search)) : collectionRef;
-      // if (categoryFilter) {
-      //   q = query(q, where("category", "==", categoryFilter));
-      // }
+
+      let q: Query<DocumentData> = collectionRef;
+
+      if (filter) {
+        q = query(q, where("category", "==", filter));
+      }
+
+      if (search) {
+        q = query(q, where("description", "==", search));
+      }
+      q = query(q, orderBy("createdAt", "desc" as OrderByDirection));
       const querySnapshot = await getDocs(q);
       const entries: DiaryEntry[] = [];
       querySnapshot.forEach((doc) => {
@@ -38,10 +51,11 @@ const DiaryCard: FC<Props> = ({ search }) => {
         } as DiaryEntry);
       });
       setDiaryEntries(entries);
+      setIsLoading(false); // set loading to false after fetching data
       console.log("diaryEntries", diaryEntries);
     };
     fetchDiaryEntries();
-  }, [search]);
+  }, [search,filter]);
 
   const formatter = new Intl.DateTimeFormat("en-US", {
     day: "numeric",
@@ -52,6 +66,8 @@ const DiaryCard: FC<Props> = ({ search }) => {
   });
   return (
     <div className="  flex flex-wrap    ">
+      <p>{filter}</p>
+      {isLoading && <Loader size={52} color="#000" />}
       {diaryEntries.map((entry) => (
         <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:p-4">
           <div className=" flex row ">
