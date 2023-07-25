@@ -7,6 +7,8 @@ interface Entry {
   image: File | null;
   isPublic: boolean;
   createdAt: Date;
+  startDate: Date;
+  endDate: Date;
 }
 interface EntriesState {
   entries: Entry[];

@@ -14,15 +14,19 @@ interface DiaryEntry {
   description: string; //
   image: string;
   isPublic: boolean;
+  startDate:string;
+  endDate: string;
   createdAt: Timestamp;
 }
 
 interface Props {
   search: string | boolean;
-  filter: string;
+  category: string;
+  startDate: string;
+  endDate: string;
 }
 
-const DiaryCard: FC<Props> = ({ search, filter }) => {
+const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -33,14 +37,26 @@ const DiaryCard: FC<Props> = ({ search, filter }) => {
 
       let q: Query<DocumentData> = collectionRef;
 
-      if (filter) {
-        q = query(q, where("category", "==", filter));
+      if (category || startDate || endDate || search) {
+        if (search) {
+          // Use array-contains operator to look for partial matches in the description field
+          q = query(q, where("description", "==", search));
+        }
+
+        // Use inequality operators to allow for partial matches in the other fields
+        if (category) {
+          q = query(q, where("category", "==", category));
+        }
+        if (startDate) {
+          q = query(q, where("startDate", "==", startDate));
+        }
+        if (endDate) {
+          q = query(q, where("endDate", "==", endDate));
+        }
       }
 
-      if (search) {
-        q = query(q, where("description", "==", search));
-      }
       q = query(q, orderBy("createdAt", "desc" as OrderByDirection));
+
       const querySnapshot = await getDocs(q);
       const entries: DiaryEntry[] = [];
       querySnapshot.forEach((doc) => {
@@ -55,7 +71,7 @@ const DiaryCard: FC<Props> = ({ search, filter }) => {
       console.log("diaryEntries", diaryEntries);
     };
     fetchDiaryEntries();
-  }, [search,filter]);
+  }, [search, category, startDate, endDate]);
 
   const formatter = new Intl.DateTimeFormat("en-US", {
     day: "numeric",
@@ -66,7 +82,7 @@ const DiaryCard: FC<Props> = ({ search, filter }) => {
   });
   return (
     <div className="  flex flex-wrap    ">
-      <p>{filter}</p>
+      <p>{category}</p>
       {isLoading && <Loader size={52} color="#000" />}
       {diaryEntries.map((entry) => (
         <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:p-4">
@@ -174,3 +190,12 @@ export default DiaryCard;
 // };
 
 // export default DiaryCard;
+
+//if (filter) {
+//   q = query(q, where("category", "==", filter));
+// }
+
+// if (search) {
+//   q = query(q, where("description", "==", search));
+// }
+// q = query(q, orderBy("createdAt", "desc" as OrderByDirection));
