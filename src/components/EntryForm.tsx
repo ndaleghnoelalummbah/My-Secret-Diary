@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { collection, getDoc, doc, updateDoc, addDoc, setDoc, DocumentData } from "firebase/firestore";
 import { db } from "../firebase";
@@ -12,6 +13,7 @@ import { createEntry } from "../features/entriesSlice";
 import { Console } from "console";
 import { toast } from "react-toastify";
 import { useCategories } from "./categories";
+import Loader from "./Loader";
 
 // Define the initial values for the form
 interface FormValues {
@@ -20,6 +22,8 @@ interface FormValues {
   category: string;
   image: File | null;
   isPublic: boolean;
+  startDate: string;
+  endDate: string;
 }
 
 // Define the EntryForm component
@@ -27,9 +31,13 @@ interface FormValues {
 const EntryForm = () => {
   const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-    const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [refresh, setRefresh] = useState(true);
-const categories = useCategories();
+
+  const { categories, isLoading, setIsLoading } = useCategories();
+  const [submittingForm, setSubmittingForm] = useState(false);
+  const navigate = useNavigate();
+
   // useEffect(() => {
   //   getCategories();
   // }, []);
@@ -57,6 +65,8 @@ const categories = useCategories();
     category: "",
     image: null,
     isPublic: false,
+    startDate: "",
+    endDate: "",
   });
   // const [formData, setFormData] = useState({...initialValues, createdAt: null});
 
@@ -76,33 +86,38 @@ const categories = useCategories();
         const file = value as File;
         return file.type ? ["image/jpeg", "image/png", "image/gif"].includes(file.type) : false;
       }),
+    startDate: Yup.string().required("start date is required"),
+    endDate: Yup.string().required("end date is required"),
   });
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-
     if (submitted) {
       timer = setTimeout(() => {
         setSubmitted(false);
-      }, 3000);
+        navigate("/journal");
+      }, 2000);
     }
-
     return () => clearTimeout(timer);
   }, [submitted]);
 
   //creat a new document with a generated document id
 
   const onSubmit = async (values: FormValues, onSubmitProps: FormikHelpers<FormValues>) => {
+    setSubmittingForm(true);
     setInitialValues({
       // createdAt: new Date(),
       description: values.description,
       category: values.category,
       image: values.image,
       isPublic: values.isPublic,
+      startDate: values.startDate,
+      endDate: values.endDate,
     });
-    const { category, description, image, isPublic } = values;
+    const { category, description, image, isPublic, startDate, endDate } = values;
     if (!values.image) return;
-    const storageRef = ref(storage, `files/${values.image.name}`);
+    const fileName = `${uuidv4()}.${values.image.name.split(".").pop()}`;
+    const storageRef = ref(storage, `files/${fileName}`);
     const uploadTask = uploadBytesResumable(storageRef, values.image);
 
     uploadTask.on(
@@ -122,6 +137,8 @@ const categories = useCategories();
             image: downloadURL,
             isPublic,
             createdAt: new Date(),
+            startDate,
+            endDate,
           });
 
           // Set imgUrl to the download URL and reset the form
@@ -131,6 +148,8 @@ const categories = useCategories();
           setSubmitted(true);
         } catch (error) {
           alert(error);
+        } finally {
+          setSubmittingForm(false); // Reset the isSubmitting state
         }
       }
     );
@@ -141,12 +160,13 @@ const categories = useCategories();
       <Formik<FormValues> initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({ errors, touched, isSubmitting, setFieldValue }) => (
           <Form>
+            {submittingForm && <Loader size={52} color="#000" />}
             <div className="my-4">
               <label htmlFor="category">Category</label>
               <br />
               <Field as="select" name="category" id="category" className=" rounded-lg border-2 border-gray-700 w-full mt-2 py-2">
                 <option value="" disabled>
-                  category
+                  Category
                 </option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -154,12 +174,13 @@ const categories = useCategories();
                   </option>
                 ))}
               </Field>
+              {isLoading && <Loader size={32} color="#000" />}
               {errors.category && touched.category ? <div className=" text-red-400">{errors.category}</div> : null}
             </div>
             <div>
               <label htmlFor="description">Description</label>
               <br />
-              <Field as="textarea" name="description" id="description" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-24" />
+              <Field as="textarea" name="description" id="description" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-16" />
               {errors.description && touched.description ? <div className=" text-red-400">{errors.description}</div> : null}
             </div>
             <div className="my-2">
@@ -199,13 +220,25 @@ const categories = useCategories();
                 Is entry public?
               </label>
             </div>
-            <button type="submit" disabled={isSubmitting} className="bg-black text-white font-semibold w-full py-3 mx-auto my-6 rounded-lg">
+            <div className=" my-4">
+              <label htmlFor="startDate">Start Date</label>
+              <br />
+              <Field type="date" name="startDate" id="startDate" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-10" />
+              {errors.startDate && touched.startDate ? <div className=" text-red-400">{errors.startDate}</div> : null}
+            </div>
+            <div>
+              <label htmlFor="endDate">End Date</label>
+              <br />
+              <Field type="date" name="endDate" id="endDate" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-10" />
+              {errors.endDate && touched.endDate ? <div className=" text-red-400">{errors.endDate}</div> : null}
+            </div>
+            <button type="submit" disabled={submittingForm} className="bg-black text-white font-semibold w-full py-3 mx-auto my-16 rounded-lg">
               Save
             </button>
             {submitted && (
-              <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-                <div className="bg-white p-8 rounded-lg shadow-lg">
-                  <p>Form Sucessfully Submitted.</p>
+              <div className="fixed top-0 left-0 w-screen h-screen flex bg-white items-center justify-center z-50">
+                <div className=" bg-gray-800 bg-opacity-50 p-8 h-32 rounded-lg shadow-lg">
+                  <p>Diary entry saved Sucessfully.</p>
                 </div>
               </div>
             )}

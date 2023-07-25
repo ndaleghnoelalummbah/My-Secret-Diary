@@ -9,14 +9,27 @@ import DiaryCard from "../components/DiaryCard";
 import search from "../resource/search.png";
 import filter from "../resource/filter.png";
 import { useCategories } from "../components/categories";
+import Loader from "../components/Loader";
+import FilterForm from "../components/FilterForm";
 
+// Define the initial values for the form
+export type FormValues = {
+  category: string;
+  startDate: string;
+  endDate: string;
+}
 const Dashboard: FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterQuery, setFilterQuery] = useState("");
-  const [clicked, setClicked] = useState(false);
-  const categories = useCategories();
+  const [filterData, setFilterData] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const { categories, isLoading, setIsLoading } = useCategories();
 
+  const [initialValues, setInitialValues] = useState<FormValues>({
+    category: "",
+    startDate: "",
+    endDate: "",
+  });
   useEffect(() => {
     // Display a success toast message when the component mounts
     toast.success("Login successful!", {
@@ -35,13 +48,15 @@ const Dashboard: FC = () => {
     setSearchQuery(event.target.value);
   };
   const handleFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setClicked(true);
-    setFilterQuery(event.target.value);
-      //alert(filterQuery);
+    setShowForm(true);
+   // setFilterQuery(event.target.value);
+    //alert(filterQuery);
   };
-// useEffect(() => {
-//   // This code will run immediately after the state update
-//   }, [filterQuery]);
+
+  // useEffect(() => {
+  //   // This code will run immediately after the state update
+  //   }, [filterQuery]);
+  const { category, startDate, endDate } = initialValues;
   return (
     <div>
       {isLoaded ? (
@@ -60,24 +75,11 @@ const Dashboard: FC = () => {
                 <img src={search} alt="search" className=" -ml-8 border-b-2 border-black" />
               </div>
 
-              <div className=" flex row w-2/12 bg-blue-200 border-b-2 border-black justify-end">
-                <div></div>
-                {!clicked && <img src={filter} alt="filter" onClick={() => setClicked(true)} />}
-                {clicked && (
-                  <select value={filterQuery} name="category" id="category" onChange={handleFilter} className=" border-b-2 border-black p-1 w-full">
-                    <option value="" disabled>
-                      category
-                    </option>
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+              <div className=" flex row w-2/12 bg-blue-200 border-b-2 border-black justify-end">{!showForm && <img src={filter} alt="filter" onClick={() => setShowForm(true)} />}</div>
             </div>
-            <DiaryCard search={searchQuery} filter={filterQuery} />
+            {showForm && <FilterForm setShowForm={setShowForm} initialValues={initialValues} setInitialValues={setInitialValues} />}
+
+            <DiaryCard search={searchQuery} category={category} startDate={startDate} endDate={endDate} />
             <Footer />
           </div>
         </>
@@ -89,3 +91,19 @@ const Dashboard: FC = () => {
 };
 
 export default Dashboard;
+
+
+
+//  <p className=" h-full w-2/3 md:w-32">Filter your diary entries</p>
+//                     <select value={filterQuery} name="category" id="category" onChange={handleFilter} className=" border-b-2 border-black p-1 w-full">
+//                       <option value="" disabled>
+//                         category
+//                       </option>
+//                       {categories.map((category) => (
+//                         <option key={category} value={category}>
+//                           {category}
+//                         </option>
+//                       ))}
+//                     </select>
+//                     {isLoading && <Loader size={32} color="#000" />}
+                  

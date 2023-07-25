@@ -19,3 +19,4 @@
   "include": ["src"],
   "types": ["react", "react-dom", "react-router-dom", "react-toastify,", "Firebase"]
 }
+
