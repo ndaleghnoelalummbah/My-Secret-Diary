@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { collection, getDocs, CollectionReference, DocumentData, where, query, Query, orderBy, OrderByDirection } from "firebase/firestore";
+import { collection, getDocs, CollectionReference, DocumentData, where, or, query, Query, orderBy, OrderByDirection } from "firebase/firestore";
 import { db } from "../firebase";
 import pvlock from "../resource/private-lock.png";
 import pblock from "../resource/public-lock.png";
 import { Timestamp } from "firebase/firestore";
 import { boolean } from "yup";
 import Loader from "./Loader";
+import { auth } from "../firebase";
 import { useAppDispatch } from "../hooks/storeHook";
 
 interface DiaryEntry {
@@ -14,7 +15,7 @@ interface DiaryEntry {
   description: string; //
   image: string;
   isPublic: boolean;
-  startDate:string;
+  startDate: string;
   endDate: string;
   createdAt: Timestamp;
 }
@@ -29,6 +30,9 @@ interface Props {
 const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const user = auth.currentUser;
+  const userId = user ? user.uid : null;
 
   useEffect(() => {
     const fetchDiaryEntries = async () => {
@@ -55,7 +59,9 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
         }
       }
 
-      q = query(q, orderBy("createdAt", "desc" as OrderByDirection));
+//q = query(q, where("isPublic", "==", true));
+q = query(q, or(where("userId", "==", userId), where("isPublic", "==", true)));
+q = query(q, orderBy("createdAt", "desc" as OrderByDirection));
 
       const querySnapshot = await getDocs(q);
       const entries: DiaryEntry[] = [];
