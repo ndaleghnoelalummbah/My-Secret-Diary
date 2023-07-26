@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import EntryForm from "../components/EntryForm";
+
+
 const DiaryEntry = () => {
   return (
     <div>
@@ -15,7 +17,7 @@ const DiaryEntry = () => {
             <Link to="/journal">X</Link>{" "}
           </span>
         </div>
-        <EntryForm />
+        <EntryForm  />
         <Footer />
       </div>
     </div>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,FC } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { collection, getDoc, doc, updateDoc, addDoc, setDoc, DocumentData } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import { storage } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
 import { RootState } from "../store";
@@ -14,6 +14,7 @@ import { Console } from "console";
 import { toast } from "react-toastify";
 import { useCategories } from "./categories";
 import Loader from "./Loader";
+
 
 // Define the initial values for the form
 interface FormValues {
@@ -29,14 +30,15 @@ interface FormValues {
 // Define the EntryForm component
 //{ createEntry }: ConnectedProps<typeof connector>
 const EntryForm = () => {
-  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+    const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [refresh, setRefresh] = useState(true);
-
   const { categories, isLoading, setIsLoading } = useCategories();
   const [submittingForm, setSubmittingForm] = useState(false);
   const navigate = useNavigate();
+  const user = auth.currentUser;
+  const userId = user ? user.uid : null;
 
   // useEffect(() => {
   //   getCategories();
@@ -87,7 +89,16 @@ const EntryForm = () => {
         return file.type ? ["image/jpeg", "image/png", "image/gif"].includes(file.type) : false;
       }),
     startDate: Yup.string().required("start date is required"),
-    endDate: Yup.string().required("end date is required"),
+    endDate: Yup.string().required("end date is required")
+     .test(
+      "is-after-startDate",
+      "End date must come after start date",
+      function (value) {
+        const startDate = new Date(this.parent.startDate);
+        const endDate = new Date(value);
+        return !startDate || !endDate || endDate > startDate;
+      }
+     ),
   });
 
   useEffect(() => {
@@ -137,6 +148,7 @@ const EntryForm = () => {
             image: downloadURL,
             isPublic,
             createdAt: new Date(),
+            userId,
             startDate,
             endDate,
           });

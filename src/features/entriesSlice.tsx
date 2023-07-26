@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Entry {
   // Define the properties of a diary entry
+  userId: string;
   description: string;
   category: string;
   image: File | null;
