@@ -248,8 +248,8 @@ const EntryForm = () => {
               Save
             </button>
             {submitted && (
-              <div className="fixed top-0 left-0 w-screen h-screen flex bg-white items-center justify-center z-50">
-                <div className=" bg-gray-800 bg-opacity-50 p-8 h-32 rounded-lg shadow-lg">
+              <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-50">
+                <div className=" bg-white bg-opacity-500 p-8 h-32 rounded-lg shadow-lg">
                   <p>Diary entry saved Sucessfully.</p>
                 </div>
               </div>
