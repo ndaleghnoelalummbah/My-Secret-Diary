@@ -150,7 +150,6 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
   };
   return (
     <div className="  flex flex-wrap    ">
-      <p>{category}</p>
       {isLoading && <Loader size={52} color="#000" />}
       {diaryEntries.map((entry) => (
         <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:p-4  ">
