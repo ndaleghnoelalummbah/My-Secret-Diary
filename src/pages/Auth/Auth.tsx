@@ -70,14 +70,18 @@ const Auth = () => {
 
   const signInWithFacebook = async () => {
     const facebookprovider = new FacebookAuthProvider();
-  
-    signInWithPopup(auth, facebookprovider)
+     signInWithPopup(auth, facebookprovider)
       .then((result) => {
         console.log(result);
       })
       .catch((err) => {
         console.log(err.message);
       });
+    // signInWithPopup(auth, facebookprovider)
+    //   .then((result) => {
+    //     console.log(result);
+    //   })
+      
   };
 
   const handleFormSubmit = async (data: AuthForm) => {
