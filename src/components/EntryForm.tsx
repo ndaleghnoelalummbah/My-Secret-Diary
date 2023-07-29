@@ -1,20 +1,18 @@
-import React, { useState, useEffect,FC } from "react";
+import React, { useState, useEffect, FC } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
+import { Formik, Form, Field, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { collection, getDoc, doc, updateDoc, addDoc, setDoc, DocumentData } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { storage } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
 import { RootState } from "../store";
 import { createEntry } from "../features/entriesSlice";
-import { Console } from "console";
-import { toast } from "react-toastify";
 import { useCategories } from "./categories";
 import Loader from "./Loader";
-
+import Button from "./Button";
 
 // Define the initial values for the form
 interface FormValues {
@@ -28,9 +26,8 @@ interface FormValues {
 }
 
 // Define the EntryForm component
-//{ createEntry }: ConnectedProps<typeof connector>
 const EntryForm = () => {
-    const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [refresh, setRefresh] = useState(true);
@@ -40,27 +37,6 @@ const EntryForm = () => {
   const user = auth.currentUser;
   const userId = user ? user.uid : null;
 
-  // useEffect(() => {
-  //   getCategories();
-  // }, []);
-
-  // function getCategories() {
-  //   const fetchStrings = async () => {
-  //     try {
-  //       const categoriesRef = doc(db, "categories", "categories"); //reference a collection
-  //       const categoriesDoc = await getDoc(categoriesRef); //reference a document in the collection
-  //       const stringArray = categoriesDoc.data()?.categories;
-  //       if (stringArray) {
-  //         setCategories(stringArray);
-  //         console.log("arr", stringArray);
-  //         console.log("cat", categories);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching strings:", error);
-  //     }
-  //   };
-  //   fetchStrings();
-  // }
   const [initialValues, setInitialValues] = useState<FormValues>({
     // createdAt: new Date(),
     description: "",
@@ -70,12 +46,10 @@ const EntryForm = () => {
     startDate: "",
     endDate: "",
   });
-  // const [formData, setFormData] = useState({...initialValues, createdAt: null});
 
   // Define the validation schema using Yup
   const validationSchema = Yup.object({
     description: Yup.string().required("Description is required"),
-    // category: Yup.string().required("Category is required"),
     image: Yup.mixed()
       .notRequired()
       .test("fileSize", "File size is too large", (value: Yup.AnyObject | null | undefined) => {
@@ -89,16 +63,13 @@ const EntryForm = () => {
         return file.type ? ["image/jpeg", "image/png", "image/gif"].includes(file.type) : false;
       }),
     startDate: Yup.string().required("start date is required"),
-    endDate: Yup.string().required("end date is required")
-     .test(
-      "is-after-startDate",
-      "End date must come after start date",
-      function (value) {
+    endDate: Yup.string()
+      .required("end date is required")
+      .test("is-after-startDate", "End date must come after start date", function (value) {
         const startDate = new Date(this.parent.startDate);
         const endDate = new Date(value);
         return !startDate || !endDate || endDate > startDate;
-      }
-     ),
+      }),
   });
 
   useEffect(() => {
@@ -199,19 +170,13 @@ const EntryForm = () => {
               <label htmlFor="image">Upload Image (optional)</label>
               <br />
               <div className="bg-gray-100 bg-opacity-80 h-64 mt-1 mb-4 ">
-                {/* <div className="bg-slate-200 bg-opacity-60  h-40 w-3/4 mx-auto py-2 "> */}
                 {imagePreview && <img src={imagePreview} alt="Preview of uploaded image" className="h-52 w-full mx-auto " />}
-
-                {/* {imgUrl && <img src={imgUrl} alt="uploaded file" className="h-52 w-full mx-auto " />} */}
                 <div className="mt-2 mx-auto bg-green-100 w-52">
                   {" "}
                   <input
                     type="file"
                     id="image"
                     name="image"
-                    // onChange={(event) => {
-                    //   setFieldValue("image", event.currentTarget.files?.[0] || null);
-                    //                  }}
                     onChange={(event) => {
                       setFieldValue("image", event.currentTarget.files?.[0] || null);
                       if (event.currentTarget.files?.[0]) {
@@ -244,9 +209,7 @@ const EntryForm = () => {
               <Field type="date" name="endDate" id="endDate" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-10" />
               {errors.endDate && touched.endDate ? <div className=" text-red-400">{errors.endDate}</div> : null}
             </div>
-            <button type="submit" disabled={submittingForm} className="bg-black text-white font-semibold w-full py-3 mx-auto my-16 rounded-lg">
-              Save
-            </button>
+            <Button label="Save" type="submit" disabled={submittingForm} styleProps="bg-black text-white font-semibold text-center w-full py-3 mx-auto my-16 rounded-lg" />
             {submitted && (
               <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-50">
                 <div className=" bg-white bg-opacity-500 p-8 h-32 rounded-lg shadow-lg">

@@ -9,6 +9,7 @@ import { ref, deleteObject } from "firebase/storage";
 import { boolean } from "yup";
 import Loader from "./Loader";
 import { auth } from "../firebase";
+import Button from "./Button";
 import { useAppDispatch } from "../hooks/storeHook";
 import greentoggle from "../resource/greentoggle.png";
 import redtoggle from "../resource/redtoggle.png";
@@ -187,12 +188,8 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
                   <p className=" text-orange-600 text-lg font-extrabold text-center">Are you sure you want to delete this diary entry?</p>
                 </div>
                 <div className=" flex row justify-around mt-10 ">
-                  <button className=" bg-black rounded-lg text-white font-medium  px-8 py-2" onClick={cancelDelete}>
-                    No
-                  </button>
-                  <button onClick={confirmDelete} className=" border-2 border-orange-800 rounded-lg text-orange-600 font-bold px-8 py-2">
-                    Yes
-                  </button>
+                  <Button label="No" type="button" btnAction={cancelDelete} styleProps=" bg-black rounded-lg text-white font-medium  px-8 py-2" />
+                  <Button label="Yes" type="button" btnAction={confirmDelete} styleProps=" border-2 border-orange-800 rounded-lg text-orange-600 font-bold px-8 py-2" />
                 </div>
               </div>
             </div>
