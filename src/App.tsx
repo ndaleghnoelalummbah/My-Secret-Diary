@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import HomePage from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard";
 
-import Auth from "./pages/Auth/Auth";
+import Auth from "./components/Auth/Auth";
 import Profile from "./pages/Profile/Profile";
 import { auth } from "./firebase";
 import { useAppDispatch } from "./hooks/storeHook";

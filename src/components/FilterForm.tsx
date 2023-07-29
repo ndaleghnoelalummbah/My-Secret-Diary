@@ -1,6 +1,7 @@
 import React, { useState, FC } from "react";
 import { useCategories } from "./categories";
 import Loader from "./Loader";
+import Button from "./Button";
 import { FormValues } from "../pages/Dashboard";
 
 interface Props {
@@ -66,10 +67,7 @@ const FilterForm: FC<Props> = ({ setShowForm, initialValues, setInitialValues })
               <br />
               <input type="date" name="endDate" id="endDate" value={formValues.endDate} onChange={handleChange} className=" rounded-lg border-2 border-gray-700 w-full mt-1 py-2" />
             </div>
-
-            <button type="submit" disabled={submittingForm} className="bg-black text-white font-semibold w-full py-3 mx-auto my-4 rounded-lg">
-              Filter
-            </button>
+            <Button label="Filter" type="submit" disabled={submittingForm} styleProps="bg-black text-white text-center font-semibold w-full py-3 mx-auto my-4 rounded-lg" />
           </form>
         </div>
       </div>

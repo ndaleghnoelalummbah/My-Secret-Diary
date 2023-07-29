@@ -11,6 +11,7 @@ import filter from "../resource/filter.png";
 import { useCategories } from "../components/categories";
 import Loader from "../components/Loader";
 import FilterForm from "../components/FilterForm";
+import { useNavigate } from "react-router-dom";
 
 // Define the initial values for the form
 export type FormValues = {
@@ -25,6 +26,10 @@ const Dashboard: FC = () => {
   const [showForm, setShowForm] = useState(false);
   const { categories, isLoading, setIsLoading } = useCategories();
 
+const navigate = useNavigate();
+const handleEntry = ()=>{
+  navigate("/journal/create");
+}
   const [initialValues, setInitialValues] = useState<FormValues>({
     category: "",
     startDate: "",
@@ -49,14 +54,9 @@ const Dashboard: FC = () => {
   };
   const handleFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setShowForm(true);
-   // setFilterQuery(event.target.value);
-    //alert(filterQuery);
-  };
+     };
 
-  // useEffect(() => {
-  //   // This code will run immediately after the state update
-  //   }, [filterQuery]);
-  const { category, startDate, endDate } = initialValues;
+    const { category, startDate, endDate } = initialValues;
   return (
     <div>
       {isLoaded ? (
@@ -65,9 +65,10 @@ const Dashboard: FC = () => {
           <div className="p-6 ">
             <div className=" flex justify-between ">
               <span className="font-semibold text-2xl">Welcome Back</span>
-              <button className=" bg-black rounded-lg text-white font-medium ml-auto px-4 py-2">
+              {/* <button className=" bg-black rounded-lg text-white font-medium ml-auto px-4 py-2">
                 <Link to="/journal/create">New entry</Link>
-              </button>
+              </button> */}
+              <Button label="New entry" type="button" btnAction={handleEntry} styleProps=" bg-black rounded-lg text-white font-medium ml-auto px-4 py-2" />
             </div>
             <div className=" my-4 flex justify-between ">
               <div className=" flex row w-9/12 bg-blue-200">
@@ -93,17 +94,3 @@ const Dashboard: FC = () => {
 export default Dashboard;
 
 
-
-//  <p className=" h-full w-2/3 md:w-32">Filter your diary entries</p>
-//                     <select value={filterQuery} name="category" id="category" onChange={handleFilter} className=" border-b-2 border-black p-1 w-full">
-//                       <option value="" disabled>
-//                         category
-//                       </option>
-//                       {categories.map((category) => (
-//                         <option key={category} value={category}>
-//                           {category}
-//                         </option>
-//                       ))}
-//                     </select>
-//                     {isLoading && <Loader size={32} color="#000" />}
-                  

@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Dashboard from "../Dashboard";
+import Dashboard from "../../pages/Dashboard";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, FacebookAuthProvider } from "firebase/auth";
 import { signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
@@ -15,7 +15,7 @@ import { AuthForm, authFormSchema } from "../../models/Form";
 import { auth, db } from "../../firebase";
 import { useAppDispatch, useAppSelector } from "../../hooks/storeHook";
 import { login } from "../../features/authSlice";
-import ResetPassword from "../../components/ResetPassword/ResetPassword";
+import Button from "../Button";
 
 const Auth = () => {
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
@@ -26,8 +26,7 @@ const Auth = () => {
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState<string | null>(null);
   const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
-  const { user } = useAppSelector((
-    state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -70,19 +69,14 @@ const Auth = () => {
 
   const signInWithFacebook = async () => {
     const facebookprovider = new FacebookAuthProvider();
-     signInWithPopup(auth, facebookprovider)
+    signInWithPopup(auth, facebookprovider)
       .then((result) => {
         console.log(result);
       })
       .catch((err) => {
         console.log(err.message);
       });
-    // signInWithPopup(auth, facebookprovider)
-    //   .then((result) => {
-    //     console.log(result);
-    //   })
-      
-  };
+      };
 
   const handleFormSubmit = async (data: AuthForm) => {
     setErrorMessage(null);
@@ -136,22 +130,11 @@ const Auth = () => {
 
   return (
     <>
-      <ResetPassword resetPasswordEmail={resetPasswordEmail} resetPasswordSuccess={resetPasswordSuccess} resetPasswordError={resetPasswordError} setResetPasswordEmail={setResetPasswordEmail} isOpen={resetPassword} onClose={() => setResetPassword(false)} handlePasswordReset={handlePasswordReset} />
-      <div className={container}>
-        <div className="w-full max-w-sm rounded-lg bg-slate-700/30 shadow">
-          {errorMessage && <p className="bg-red-400 px-3 py-2 text-center rounded-md text-white">{errorMessage}</p>}
-          <form onSubmit={handleSubmit(handleFormSubmit)} className={form}>
-            <div className="grid gap-y-3">
-              <button onClick={signInWithGoogle} className={button} type="button">
-                Google
-              </button>
-              <button onClick={signInWithFacebook} className={button} type="button">
-                Facebook
-              </button>
-            </div>
-
-          </form>
-        </div>
+      <div>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={form}>
+         <Button label="Sign in with Google" type="button" btnAction={signInWithGoogle} styleProps="bg-black max-w-lg mx-auto text-center text-white py-4 my-4 rounded-lg" />
+          <Button label="Sign in with Facebook" type="button" btnAction={signInWithFacebook} styleProps="bg-black max-w-lg mx-auto text-center text-white py-4 my-4 rounded-lg" />
+        </form>
       </div>
     </>
   );
@@ -159,31 +142,31 @@ const Auth = () => {
 
 export default Auth;
 
-  // try {
-    //   const { user } = await signInWithPopup(auth, facebookprovider);
+// try {
+//   const { user } = await signInWithPopup(auth, facebookprovider);
 
-    //   if (user && user.email)
-    //     dispatch(
-    //       login({
-    //         email: user.email,
-    //         id: user.uid,
-    //         photoUrl: user.photoURL || null,
-    //       })
-    //     );
-    // } catch (error) {
-    //   console.log("Error signing in:", error);
-    // }
-    {
-      /* 
+//   if (user && user.email)
+//     dispatch(
+//       login({
+//         email: user.email,
+//         id: user.uid,
+//         photoUrl: user.photoURL || null,
+//       })
+//     );
+// } catch (error) {
+//   console.log("Error signing in:", error);
+// }
+{
+  /* 
             <div className="my-3 flex items-center px-3">
               <hr className={hr} />
               <span className={text}>or</span>
               <hr className={hr} />
             </div> */
-    }
+}
 
-    {
-      /* <div className="grid gap-y-3">
+{
+  /* <div className="grid gap-y-3">
               <div>
                 <input type="email" placeholder="email@example.com" className={input} {...register("email")} />
                 {errors.email ? <span className="text-red-700">{errors.email.message}</span> : <></>}
@@ -201,10 +184,10 @@ export default Auth;
                 Sign {authType === "login" ? "in" : "up"} with Email
               </button>
             </div> */
-    }
+}
 
-    {
-      /* <div className="text-sm font-light py-4">
+{
+  /* <div className="text-sm font-light py-4">
               {authType === "login" ? (
                 <span>
                   Don&apos;t have an account yet?{" "}
@@ -221,14 +204,14 @@ export default Auth;
                 </span>
               )}
             </div> */
-    }
+}
 
-    {
-      /* <div className="my-3 flex items-center px-3">
+{
+  /* <div className="my-3 flex items-center px-3">
               <hr className={hr} />
               <button onClick={() => setResetPassword(true)} type="button" className={forgotPasswordButton}>
                 forgot password
               </button>
               <hr className={hr} />
             </div> */
-    }
+}

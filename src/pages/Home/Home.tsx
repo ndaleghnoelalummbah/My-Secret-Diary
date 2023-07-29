@@ -2,18 +2,16 @@
 import { homeClasses } from "./homeClasses";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
-import Button from "../../components/Button";
 import Footer from "../../components/Footer/Footer";
+import Auth from "../../components/Auth/Auth";
 
 const Home = () => {
   const { container, cardContainer, title, description } = homeClasses;
-
   return (
     <div className="  mx-auto ">
       <Navbar heading="My Secret Diary" />
       <div className="px-4">
         <h1 className="text-center mt-24">Welcome to private diary</h1>
-
         <p className="flex flex-col shrink-0 text-center font-normal ">
           Create private entries, log your activities <br />
           update records and publish what you want
@@ -22,8 +20,7 @@ const Home = () => {
         <Link to="" className="">
           <h2 className="text-center mt-16 underline">GET STARTED</h2>
         </Link>
-        <Button label="Sign in with Google" />
-        <Button label="Sign in with Facebook" />
+        <Auth />
         <Footer />
       </div>
     </div>
