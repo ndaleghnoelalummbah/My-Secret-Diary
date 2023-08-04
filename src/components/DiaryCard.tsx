@@ -177,14 +177,14 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
                 </div>
               )}
             </div>
-            {entry.userId == userId && <img src={delet} alt={delet} onClick={() => handleDelete(entry)} className=" h-6 w-4 ml-auto mt-4" />}
+            {entry.userId == userId && <img src={delet} alt={delet} onClick={() => handleDelete(entry)} className=" h-6 w-4 ml-auto mt-5 md:ml-10" />}
           </div>
           <div className=" mt-4">
             <p>{entry.description}</p>
           </div>
           {deleteEntry && (
             <div className="fixed top-0  left-0 w-screen h-screen flex  items-center justify-center z-50">
-              <div className=" bg-white bg-opacity-500 h-4/6 w-2/3 rounded-lg shadow-lg  ">
+              <div className=" bg-white bg-opacity-500 h-4/6 w-2/3 rounded-lg shadow-lg md:w-1/4 ">
                 <div className=" bg-orange-600 py-6  ">
                   <p className=" text-center text-white font-bold text-xl">Delete #2</p>
                 </div>

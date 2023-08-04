@@ -76,7 +76,7 @@ const handleEntry = ()=>{
                 <img src={search} alt="search" className=" -ml-8 border-b-2 border-black" />
               </div>
 
-              <div className=" flex row w-2/12 bg-blue-200 border-b-2 border-black justify-end">{!showForm && <img src={filter} alt="filter" onClick={() => setShowForm(true)} />}</div>
+              <div className=" flex row w-2/12  border-b-2 border-black justify-end">{!showForm && <img src={filter} alt="filter" onClick={() => setShowForm(true)} />}</div>
             </div>
             {showForm && <FilterForm setShowForm={setShowForm} initialValues={initialValues} setInitialValues={setInitialValues} />}
 
