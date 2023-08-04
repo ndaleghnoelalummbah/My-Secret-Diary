@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { sendPasswordResetEmail, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
-import Header from "../../components/Header/Header";
+import Header from "../../components/Header";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { useAppDispatch, useAppSelector } from "../../hooks/storeHook";
 import { logout } from "../../features/authSlice";
@@ -18,8 +18,7 @@ const Profile = () => {
   const handleLogout = async () => {
     await signOut(auth);
     dispatch(logout());
-
-      };
+  };
   const handlePasswordReset = async () => {
     if (!resetPasswordEmail.length) return;
     try {
