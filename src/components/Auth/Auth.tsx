@@ -26,6 +26,7 @@ const Auth = () => {
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState<string | null>(null);
   const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
+  // call the authSlice object which is assigned to a name auth.its reducers return the the recent user
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
