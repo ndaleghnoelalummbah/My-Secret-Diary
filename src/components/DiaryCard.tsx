@@ -10,15 +10,16 @@ import { boolean } from "yup";
 import Loader from "./Loader";
 import { auth } from "../firebase";
 import Button from "./Button";
-import { useAppDispatch } from "../hooks/storeHook";
+import { useAppDispatch, useAppSelector } from "../hooks/storeHook";
 import greentoggle from "../resource/greentoggle.png";
 import redtoggle from "../resource/redtoggle.png";
 import delet from "../resource/delete.png";
 import warning from "../resource/warning.png";
+import { deleteDiaryEntry,setEntries, Entry, toggleEntryStatus } from "../features/entriesSlice";
 
 interface DiaryEntry {
   id: string;
-  userId: string;
+  userId: string | null;
   category: string;
   description: string; //
   image: string;
@@ -41,10 +42,11 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
   const [showWarning, setShowWarning] = useState(false);
   // Define the state variable for the entry being deleted
   const [deleteEntry, setDeleteEntry] = useState<DiaryEntry | null>(null);
-
+  const dispatch = useAppDispatch();
   const user = auth.currentUser;
   const userId = user ? user.uid : null;
 
+  const Entries = useAppSelector((state) => state.entries.entries);
   useEffect(() => {
     const fetchDiaryEntries = async () => {
       setIsLoading(true); // set loading to true before fetching data
@@ -83,7 +85,8 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
           ...doc.data(),
         } as DiaryEntry);
       });
-      setDiaryEntries(entries);
+      dispatch(setEntries(entries))
+      //setDiaryEntries(entries);
       setIsLoading(false); // set loading to false after fetching data
       console.log("diaryEntries", diaryEntries);
     };
@@ -118,7 +121,8 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
         console.log(`Diary entry with ID ${deleteEntry.id} and image ${deleteEntry.image} deleted successfully!`);
 
         // Remove the deleted diary entry from the state
-        setDiaryEntries(diaryEntries.filter((e) => e.id !== deleteEntry.id));
+        dispatch(deleteDiaryEntry(deleteEntry.id));
+        // setDiaryEntries(diaryEntries.filter((e) => e.id !== deleteEntry.id));
       } catch (error) {
         console.error("Error deleting diary entry:", error);
       }
@@ -144,7 +148,8 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
       console.log(`Diary entry with ID ${entry.id} updated successfully!`);
 
       // Update the entry in the state with the new isPublic value
-      setDiaryEntries(diaryEntries.map((prev) => (prev.id === entry.id ? { ...prev, isPublic: !entry.isPublic } : prev)));
+     // setDiaryEntries(diaryEntries.map((prev) => (prev.id === entry.id ? { ...prev, isPublic: !entry.isPublic } : prev)));
+    dispatch(toggleEntryStatus(entry.id))
     } catch (error) {
       console.error("Error updating diary entry:", error);
     }
@@ -152,7 +157,7 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
   return (
     <div className="  flex flex-wrap    ">
       {isLoading && <Loader size={52} color="#000" />}
-      {diaryEntries.map((entry) => (
+      {Entries.map((entry) => (
         <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:p-4  ">
           <div className=" flex row ">
             <img src={entry.image} alt={entry.category} className=" h-24 w-24" />{" "}

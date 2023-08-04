@@ -4,7 +4,7 @@ import { Formik, Form, Field, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { storage } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -13,6 +13,7 @@ import { createEntry } from "../features/entriesSlice";
 import { useCategories } from "./categories";
 import Loader from "./Loader";
 import Button from "./Button";
+import { useAppDispatch, useAppSelector } from "../hooks/storeHook";
 
 // Define the initial values for the form
 interface FormValues {
@@ -34,6 +35,7 @@ const EntryForm = () => {
   const { categories, isLoading, setIsLoading } = useCategories();
   const [submittingForm, setSubmittingForm] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const user = auth.currentUser;
   const userId = user ? user.uid : null;
 
@@ -113,17 +115,20 @@ const EntryForm = () => {
           // Get download URL and create Firestore document
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           const entriesCollectionRef = collection(db, "diaryEntries");
-          const entriesDocRef = await addDoc(entriesCollectionRef, {
+          const newEntry = {
             category,
             description,
             image: downloadURL,
             isPublic,
-            createdAt: new Date(),
+            createdAt: Timestamp.fromDate(new Date()),
             userId,
             startDate,
             endDate,
-          });
+          };
 
+          const entriesDocRef = await addDoc(entriesCollectionRef, newEntry);
+          const id = entriesDocRef.id;
+          dispatch(createEntry({ ...newEntry, id }));
           // Set imgUrl to the download URL and reset the form
           setImgUrl(downloadURL);
           onSubmitProps.resetForm();
