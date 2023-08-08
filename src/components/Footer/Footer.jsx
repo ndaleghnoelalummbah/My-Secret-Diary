@@ -3,7 +3,7 @@ import React from "react";
 const Footer = () => {
   return (
     // <div className=" fixed bottom-0   bg-blue-200 ">
-    <div className="fixed w-full bottom-0 flex w-sm pr-10 ">
+    <div className="fixed w-full bottom-0 flex  pr-10 ">
       {/* <div> */}
       {/* <p className="inline-block">dvjjsvfjn njncvnivz</p>
       <p className="bg-red-200 ml-auto p-2 inline-block">dvnsjvash | ifauvay</p> */}

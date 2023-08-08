@@ -144,11 +144,10 @@ const EntryForm = () => {
   };
   // Render the form using Formik and Field components from formik
   return (
-    <div className=" max-w-xl mx-auto my-5 ">
+    <div className=" max-w-xl mx-auto my-5 p-4 border-2 shadow-lg  ">
       <Formik<FormValues> initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({ errors, touched, isSubmitting, setFieldValue }) => (
           <Form>
-            {submittingForm && <Loader size={52} color="#000" />}
             <div className="my-4">
               <label htmlFor="category">Category</label>
               <br />
@@ -214,6 +213,12 @@ const EntryForm = () => {
               <Field type="date" name="endDate" id="endDate" className=" mt-2 p-1 border-2 border-gray-700 rounded-lg w-full h-10" />
               {errors.endDate && touched.endDate ? <div className=" text-red-400">{errors.endDate}</div> : null}
             </div>
+            {submittingForm && (
+              <div className=" fixed w-screen h-screen inset-0 z-50">
+                {" "}
+                <Loader size={52} color="#000" />
+              </div>
+            )}
             <Button label="Save" type="submit" disabled={submittingForm} styleProps="bg-black text-white font-semibold text-center w-full py-3 mx-auto my-16 rounded-lg" />
             {submitted && (
               <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-50">

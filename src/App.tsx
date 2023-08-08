@@ -1,10 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
-//import { Provider } from "react-redux";
-//import store from "./store";
-import HomePage from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard";
-
 import Auth from "./components/Auth/Auth";
 import Profile from "./pages/Profile/Profile";
 import { auth } from "./firebase";

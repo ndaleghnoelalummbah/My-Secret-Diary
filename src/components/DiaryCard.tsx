@@ -155,50 +155,52 @@ const DiaryCard: FC<Props> = ({ search, category, startDate, endDate }) => {
     }
   };
   return (
-    <div className="  flex flex-wrap    ">
+    <div className="  flex flex-wrap  ">
       {isLoading && <Loader size={52} color="#000" />}
       {Entries.map((entry) => (
-        <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:p-4  ">
-          <div className=" flex row ">
-            <img src={entry.image} alt={entry.category} className=" h-24 w-24" />{" "}
-            <div className=" ml-6 p-2">
-              <h2>{entry.category}</h2>
-              <p>{`${formatter.formatToParts(entry.createdAt.toDate())[2].value} ${formatter.formatToParts(entry.createdAt.toDate())[0].value} ${formatter.formatToParts(entry.createdAt.toDate())[4].value} @ ${formatter.formatToParts(entry.createdAt.toDate())[6].value}:${formatter.formatToParts(entry.createdAt.toDate())[8].value}`}</p>
-              {entry.isPublic === false ? (
-                <div className=" flex">
-                  <p>private</p> <img src={pvlock} alt={pvlock} className=" h-6 w-6 ml-1" />
-                  {entry.userId == userId && <img src={redtoggle} alt={redtoggle} onClick={() => togglePublic(entry)} className=" h-5 w-7 ml-3" />}
-                </div>
-              ) : (
-                <div className=" flex">
-                  <p>public</p>
-                  <img src={pblock} alt={pblock} className=" h-6 w-6 ml-1 max-w-34" />
-                  {entry.userId == userId && <img src={greentoggle} alt={greentoggle} onClick={() => togglePublic(entry)} className=" h-5 w-7 ml-3" />}
-                </div>
-              )}
+        <div key={entry.id} className=" w-full py-4 md:w-1/2 lg:w-1/3 md:px-8   ">
+          <div className="  p-2 shadow-md">
+            <div className=" flex row ">
+              <img src={entry.image} alt={entry.category} className=" h-24 w-24" />{" "}
+              <div className=" ml-6 p-2">
+                <h2>{entry.category}</h2>
+                <p>{`${formatter.formatToParts(entry.createdAt.toDate())[2].value} ${formatter.formatToParts(entry.createdAt.toDate())[0].value} ${formatter.formatToParts(entry.createdAt.toDate())[4].value} @ ${formatter.formatToParts(entry.createdAt.toDate())[6].value}:${formatter.formatToParts(entry.createdAt.toDate())[8].value}`}</p>
+                {entry.isPublic === false ? (
+                  <div className=" flex">
+                    <p>private</p> <img src={pvlock} alt={pvlock} className=" h-6 w-6 ml-1" />
+                    {entry.userId == userId && <img src={redtoggle} alt={redtoggle} onClick={() => togglePublic(entry)} className=" h-5 w-7 ml-3" />}
+                  </div>
+                ) : (
+                  <div className=" flex">
+                    <p>public</p>
+                    <img src={pblock} alt={pblock} className=" h-6 w-6 ml-1 max-w-34" />
+                    {entry.userId == userId && <img src={greentoggle} alt={greentoggle} onClick={() => togglePublic(entry)} className=" h-5 w-7 ml-3" />}
+                  </div>
+                )}
+              </div>
+              {entry.userId == userId && <img src={delet} alt={delet} onClick={() => handleDelete(entry)} className=" h-6 w-4 ml-auto mt-5 md:ml-10" />}
             </div>
-            {entry.userId == userId && <img src={delet} alt={delet} onClick={() => handleDelete(entry)} className=" h-6 w-4 ml-auto mt-5 md:ml-10" />}
-          </div>
-          <div className=" mt-4">
-            <p>{entry.description}</p>
-          </div>
-          {deleteEntry && (
-            <div className="fixed top-0  left-0 w-screen h-screen flex  items-center justify-center z-50">
-              <div className=" bg-white bg-opacity-500 h-4/6 w-2/3 rounded-lg shadow-lg md:w-1/4 ">
-                <div className=" bg-orange-600 py-6  ">
-                  <p className=" text-center text-white font-bold text-xl">Delete #2</p>
-                </div>
-                <div className=" px-3 pt-2">
-                  <img src={warning} alt={warning} className=" h-28 w-32 mx-auto my-9" />
-                  <p className=" text-orange-600 text-lg font-extrabold text-center">Are you sure you want to delete this diary entry?</p>
-                </div>
-                <div className=" flex row justify-around mt-10 ">
-                  <Button label="No" type="button" btnAction={cancelDelete} styleProps=" bg-black rounded-lg text-white font-medium  px-8 py-2" />
-                  <Button label="Yes" type="button" btnAction={confirmDelete} styleProps=" border-2 border-orange-800 rounded-lg text-orange-600 font-bold px-8 py-2" />
+            <div className=" mt-4">
+              <p>{entry.description}</p>
+            </div>
+            {deleteEntry && (
+              <div className="fixed top-0  left-0 w-screen h-screen flex  items-center justify-center z-50">
+                <div className=" bg-white bg-opacity-500 h-4/6 w-2/3 rounded-lg shadow-lg md:w-1/4 ">
+                  <div className=" bg-orange-600 py-6  ">
+                    <p className=" text-center text-white font-bold text-xl">Delete #2</p>
+                  </div>
+                  <div className=" px-3 pt-2">
+                    <img src={warning} alt={warning} className=" h-28 w-32 mx-auto my-9" />
+                    <p className=" text-orange-600 text-lg font-extrabold text-center">Are you sure you want to delete this diary entry?</p>
+                  </div>
+                  <div className=" flex row justify-around mt-10 ">
+                    <Button label="No" type="button" btnAction={cancelDelete} styleProps=" bg-black rounded-lg text-white font-medium  px-8 py-2" />
+                    <Button label="Yes" type="button" btnAction={confirmDelete} styleProps=" border-2 border-orange-800 rounded-lg text-orange-600 font-bold px-8 py-2" />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       ))}
     </div>
