@@ -1,15 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Dashboard from "../../pages/Dashboard";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, FacebookAuthProvider } from "firebase/auth";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-
-import { useDispatch } from "react-redux";
-
 import { authClasses } from "./authClasses";
 import { AuthForm, authFormSchema } from "../../models/Form";
 import { auth, db } from "../../firebase";
@@ -20,6 +14,7 @@ import Button from "../Button";
 const Auth = () => {
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
   const [resetPassword, setResetPassword] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
@@ -33,7 +28,12 @@ const Auth = () => {
 
   useEffect(() => {
     if (Boolean(user)) {
-      navigate("/journal");
+      const timeoutId = setTimeout(() => {
+        setShowToast(false);
+        navigate("/journal");
+      }, 2000);
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [user, navigate]);
 
@@ -55,7 +55,7 @@ const Auth = () => {
     const googleprovider = new GoogleAuthProvider();
     try {
       const { user } = await signInWithPopup(auth, googleprovider);
-      if (user && user.email)
+      if (user && user.email) {
         dispatch(
           login({
             email: user.email,
@@ -63,6 +63,8 @@ const Auth = () => {
             photoUrl: user.photoURL || null,
           })
         );
+        setShowToast(true);
+      }
     } catch (error) {
       console.log("Error signing in:", error);
     }
@@ -73,11 +75,12 @@ const Auth = () => {
     signInWithPopup(auth, facebookprovider)
       .then((result) => {
         console.log(result);
+        setShowToast(true);
       })
       .catch((err) => {
         console.log(err.message);
       });
-      };
+  };
 
   const handleFormSubmit = async (data: AuthForm) => {
     setErrorMessage(null);
@@ -133,10 +136,17 @@ const Auth = () => {
     <>
       <div>
         <form onSubmit={handleSubmit(handleFormSubmit)} className={form}>
-         <Button label="Sign in with Google" type="button" btnAction={signInWithGoogle} styleProps="bg-black max-w-lg mx-auto text-center text-white py-4 my-4 rounded-lg" />
+          <Button label="Sign in with Google" type="button" btnAction={signInWithGoogle} styleProps="bg-black max-w-lg mx-auto text-center text-white py-4 my-4 rounded-lg" />
           <Button label="Sign in with Facebook" type="button" btnAction={signInWithFacebook} styleProps="bg-black max-w-lg mx-auto text-center text-white py-4 my-4 rounded-lg" />
         </form>
       </div>
+      {showToast && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-50 bg-white">
+          <div className=" bg-opacity-500 p-8 h-32 rounded-lg shadow-md">
+            <p className="text-center text-2xl">....Login Sucessfull....</p>
+          </div>
+        </div>
+      )}
     </>
   );
 };
